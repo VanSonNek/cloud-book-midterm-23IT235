@@ -19,6 +19,9 @@ const writeClient = new MongoClient(
 let readBooks;
 let writeBooks;
 
+let readClientPromise = null;
+let writeClientPromise = null;
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -29,7 +32,8 @@ async function connectWithRetry(client, label, maxRetries = 5) {
             await client.connect();
 
             console.log(`✅ ${label} account connected`);
-            return;
+            return client;
+
         } catch (error) {
             console.log(
                 `⚠️ ${label} connection attempt ${attempt}/${maxRetries} failed`
@@ -44,16 +48,35 @@ async function connectWithRetry(client, label, maxRetries = 5) {
     }
 }
 
-async function connectDatabase() {
-    await connectWithRetry(
-        readClient,
-        "READ"
-    );
+function getReadClientPromise() {
+    if (!readClientPromise) {
+        readClientPromise =
+            connectWithRetry(readClient, "READ")
+                .catch(error => {
+                    readClientPromise = null;
+                    throw error;
+                });
+    }
 
-    await connectWithRetry(
-        writeClient,
-        "WRITE"
-    );
+    return readClientPromise;
+}
+
+function getWriteClientPromise() {
+    if (!writeClientPromise) {
+        writeClientPromise =
+            connectWithRetry(writeClient, "WRITE")
+                .catch(error => {
+                    writeClientPromise = null;
+                    throw error;
+                });
+    }
+
+    return writeClientPromise;
+}
+
+async function connectDatabase() {
+    await getReadClientPromise();
+    await getWriteClientPromise();
 
     const dbName = process.env.DB_NAME;
 
@@ -77,5 +100,6 @@ function getWriteBooks() {
 module.exports = {
     connectDatabase,
     getReadBooks,
-    getWriteBooks
+    getWriteBooks,
+    getWriteClientPromise
 };

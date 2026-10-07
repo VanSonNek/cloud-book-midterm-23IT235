@@ -1,0 +1,113 @@
+<div class="container">
+
+    <h1>📚 Quản lý Sách</h1>
+
+    <section class="card">
+
+        <h2>Thêm sách mới</h2>
+
+        <form
+            action="/books"
+            method="POST"
+        >
+
+            <label>Mã sản phẩm</label>
+
+            <input
+                type="text"
+                name="productCode"
+                placeholder="{{prefix}}..."
+                required
+            >
+
+            <label>Tên sách</label>
+
+            <input
+                type="text"
+                name="name"
+                required
+            >
+
+            <label>Giá</label>
+
+            <input
+                type="number"
+                name="price"
+                min="0"
+                required
+            >
+
+            <button type="submit">
+                Thêm sách
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2>Danh sách sách</h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Mã SP</th>
+                    <th>Tên sách</th>
+                    <th>Giá gốc</th>
+                    <th>VAT</th>
+                    <th>Giá sau VAT</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {{#each books}}
+
+                <tr>
+
+                    <td>{{productCode}}</td>
+
+                    <td>{{name}}</td>
+
+                    <td>{{price}}</td>
+
+                    <td>{{vat}}%</td>
+
+                    <td>{{priceAfterVAT}}</td>
+
+                </tr>
+
+                {{/each}}
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+
+    <footer>
+
+        <p>
+            Họ tên:
+            <strong>{{fullName}}</strong>
+        </p>
+
+        <p>
+            MSSV:
+            <strong>{{mssv}}</strong>
+        </p>
+
+        <p>
+            VAT áp dụng:
+            <strong>{{vatRate}}%</strong>
+        </p>
+
+    </footer>
+
+</div>

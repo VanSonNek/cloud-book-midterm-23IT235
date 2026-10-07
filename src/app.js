@@ -134,11 +134,11 @@ async function startServer() {
     try {
         await connectDatabase();
 
-        app.listen(PORT, () => {
-            console.log(
-                `✅ Server đang chạy tại http://localhost:${PORT}`
-            );
-        });
+      app.listen(PORT, "0.0.0.0", () => {
+    console.log(
+        `✅ Server đang chạy trên port ${PORT}`
+    );
+});
     } catch (error) {
         console.error(
             "❌ Không thể khởi động server:",

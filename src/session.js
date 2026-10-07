@@ -29,7 +29,7 @@ function createSessionMiddleware() {
         cookie: {
             httpOnly: true,
             sameSite: "lax",
-            secure: false,
+           secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 60 * 1000
         }
     });

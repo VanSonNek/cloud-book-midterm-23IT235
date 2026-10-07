@@ -1,5 +1,6 @@
 require("dotenv").config();
-
+const createSessionMiddleware =
+    require("./session");
 
 const express = require("express");
 const { engine } = require("express-handlebars");
@@ -11,6 +12,7 @@ const {
 } = require("./db");
 
 const app = express();
+app.set("trust proxy", 1);
 
 app.engine(
     "hbs",
@@ -24,7 +26,9 @@ app.set("views", "./views");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
+app.use(
+    createSessionMiddleware()
+);
 const MSSV = process.env.MSSV;
 
 // 3 số cuối MSSV = 235
@@ -118,7 +122,14 @@ app.post("/books", async (req, res) => {
     }
 });
 const PORT = process.env.PORT || 3000;
+app.get("/session-test", (req, res) => {
+    req.session.views =
+        (req.session.views || 0) + 1;
 
+    res.send(
+        `Session đang lưu trên MongoDB Atlas - Số lần truy cập: ${req.session.views}`
+    );
+});
 async function startServer() {
     try {
         await connectDatabase();
